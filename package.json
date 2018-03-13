@@ -17,7 +17,8 @@
     "request": "latest",
     "request-promise-native": "latest",
     "command-line-usage": "latest",
-    "chalk": "latest"
+    "chalk": "latest",
+    "url-join": "latest"
   },
   "keywords": [
     "Panagia",
