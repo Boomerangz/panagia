@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "command-line-args": "latest",
-    "cheerio": "latest",
+    "jssoup": "latest",
     "request": "latest",
     "request-promise-native": "latest",
     "command-line-usage": "latest",
