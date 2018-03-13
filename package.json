@@ -1,0 +1,33 @@
+{
+  "name": "panagia",
+  "version": "0.0.1",
+  "description": "Web page analyzer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Boomerangz/panagia.git"
+  },
+  "dependencies": {
+    "command-line-args": "latest",
+    "cheerio": "latest",
+    "request": "latest",
+    "request-promise-native": "latest",
+    "command-line-usage": "latest",
+    "chalk": "latest"
+  },
+  "keywords": [
+    "Panagia",
+    "web",
+    "page",
+    "analyzer"
+  ],
+  "author": "Igor Zygin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Boomerangz/panagia/issues"
+  },
+  "homepage": "https://github.com/Boomerangz/panagia#readme"
+}
