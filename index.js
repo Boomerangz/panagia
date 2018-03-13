@@ -10,7 +10,8 @@ const request = require('request-promise-native');
 const jssoup = require('jssoup').default;
 const urlParser = require("url");
 const urlJoin = require("url-join");
-const resourcesAnalyze = require("./analyzers/external_resources_analyzer")
+const resourcesAnalyze = require("./analyzers/external_resources_analyzer");
+const userAgents = require("./utils/useragents")
 
 async function analyzeWebPage(url, options) {
     console.log(chalk`Analyze of {green.bold ${url}} started.`);
@@ -49,16 +50,16 @@ async function analyzeWebPage(url, options) {
         links: true,
         images: true,
         styles: true,
-        iframes: true,
+        iframes: false,
         requestOptions: options,
     };
     result.resources = await resourcesAnalyze.analyzeExternalResources(webPage, url, resourcesAnalyzeOptions);
     console.log(JSON.stringify(result, null, 2));
 }
 
-let ua = '';
+let ua;
 if (options.browser) {
-    ua = getBrowserUA();
+    ua = userAgents.getRandomBrowserUA();
 }
 const queryOptions = {    
     headers: {
@@ -67,25 +68,3 @@ const queryOptions = {
 }
 
 analyzeWebPage(options.url, queryOptions);
-
-
-// ================ Helping functions ===============
-
-function getHostname(url) {
-    const parsed = urlParser.parse(url);
-    return parsed.hostname;
-}
-
-function isSameHostName(url1, url2) {
-    const result1 = urlParser.parse(url1);
-    const result2 = urlParser.parse(url2);
-    return !(result1.hostname && result2.hostname) || result1.hostname == result2.hostname
-}
-
-
-
-
-
-function getBrowserUA() {
-    return `Mozilla/5.0 (Linux; <Android Version>; <Build Tag etc.>) AppleWebKit/<WebKit Rev> (KHTML, like Gecko) Chrome/<Chrome Rev> Mobile Safari/<WebKit Rev>`
-}
