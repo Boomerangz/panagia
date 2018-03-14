@@ -4,7 +4,7 @@
   "description": "Web page analyzer",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
     "binaryname": "./bin/panagia"
@@ -21,7 +21,8 @@
     "command-line-usage": "latest",
     "chalk": "latest",
     "url-join": "latest",
-    "xml2js": "latest"
+    "xml2js": "latest",
+    "lodash": "latest"
   },
   "keywords": [
     "Panagia",
