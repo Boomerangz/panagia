@@ -26,19 +26,21 @@
 `--help`  Print help message
 
 ### Check list:
-* Page size
-* Page loading time
-* Alexa Rank
-* Black listing
-* Fully HTTPS or not
-* Server user
-* Technology used(by headers check)
-* Summary imported files size
-* Summary non caching imported files size
+
+- [x] Page size
+- [x] Page loading time
+- [x] Alexa Rank
+- [x] Black listing
+- [x] Fully HTTPS or not
+- [x] Server user
+- [x] Technology used(by headers check)
+- [x] Summary imported files size
+- [x] Summary non caching imported files size
 
 
-###TODO
-* Analyze web-page after JS executing
-* Listing of WebAPI methods used by JS
-* Checking of nested Iframes
-* Checking of dynamic redirects
+
+## TODO
+- [ ] Analyze web-page after JS executing
+- [ ] Listing of WebAPI methods used by JS
+- [ ] Checking of nested Iframes
+- [ ] Checking of dynamic redirects
