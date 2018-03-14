@@ -35,3 +35,10 @@
 * Technology used(by headers check)
 * Summary imported files size
 * Summary non caching imported files size
+
+
+###TODO
+* Analyze web-page after JS executing
+* Listing of WebAPI methods used by JS
+* Checking of nested Iframes
+* Checking of dynamic redirects
