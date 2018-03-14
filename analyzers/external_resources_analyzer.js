@@ -11,15 +11,19 @@ const request = require('request-promise-native');
  *  - internal, external
  *  - scripts, styles, images, links, iframes
  */
+
 async function analyzeExternalResources(webPage, url, options) {
     //checking for external loading resources
-    result = {}
+    result = {
+        fullSize: 0,
+        notCachedSize: 0
+    }
     if (options.external == true) {
-        result.external = {}
+        result.external = {};
 
         //process external scripts
         if (options.scripts) {
-            result.external.Scripts = await processSizeAndTiming(
+            result.external.Scripts = await processSizeAndCaching(
                 processLinks({
                     linksList: webPage.findAll('script'),
                     attributeName: 'src',
@@ -28,10 +32,13 @@ async function analyzeExternalResources(webPage, url, options) {
                 }),
                 options.requestOptions
             );
+            const sizes = getSizes(result.external.Scripts);
+            result.fullSize += sizes.full;
+            result.notCachedSize += sizes.noncached;
         }
         //process external styles
         if (options.styles) {
-            result.external.Styles = await processSizeAndTiming(
+            result.external.Styles = await processSizeAndCaching(
                 processLinks({
                     linksList: webPage.findAll('link', {rel:"stylesheet"}),
                     attributeName: 'href',
@@ -40,11 +47,14 @@ async function analyzeExternalResources(webPage, url, options) {
                 }),
                 options.requestOptions
             );
+            const sizes = getSizes(result.external.Styles);
+            result.fullSize += sizes.full;
+            result.notCachedSize += sizes.noncached;
         }
 
         //process external images
         if (options.images) {
-            result.external.Images = await processSizeAndTiming(
+            result.external.Images = await processSizeAndCaching(
                 processLinks({
                     linksList: webPage.findAll('img'),
                     attributeName: 'src',
@@ -53,6 +63,9 @@ async function analyzeExternalResources(webPage, url, options) {
                 }),
                 options.requestOptions
             );
+            const sizes = getSizes(result.external.Images);
+            result.fullSize += sizes.full;
+            result.notCachedSize += sizes.noncached;
         }
         //process external links
         if (options.links) {
@@ -73,13 +86,12 @@ async function analyzeExternalResources(webPage, url, options) {
             });
         }
     }
-
     //checking for internal loading resources
     if (options.internal == true) {
         result.internal = {}
         //process internal scripts
         if (options.scripts) {
-            result.internal.Scripts = await processSizeAndTiming(
+            result.internal.Scripts = await processSizeAndCaching(
                 processLinks({
                     linksList: webPage.findAll('script'),
                     attributeName: 'src',
@@ -88,10 +100,13 @@ async function analyzeExternalResources(webPage, url, options) {
                 }),
                 options.requestOptions
             );
+            const sizes = getSizes(result.internal.Scripts);
+            result.fullSize += sizes.full;
+            result.notCachedSize += sizes.noncached;
         }
         //process internal styles
         if (options.styles) {
-            result.internal.Styles = await processSizeAndTiming(
+            result.internal.Styles = await processSizeAndCaching(
                 processLinks({
                     linksList: webPage.findAll('link', {rel:"stylesheet"}),
                     attributeName: 'href',
@@ -100,10 +115,13 @@ async function analyzeExternalResources(webPage, url, options) {
                 }),
                 options.requestOptions
             );
+            const sizes = getSizes(result.internal.Styles);
+            result.fullSize += sizes.full;
+            result.notCachedSize += sizes.noncached;
         }
         //process internal images
         if (options.images) {
-            result.internal.Images = await processSizeAndTiming(
+            result.internal.Images = await processSizeAndCaching(
                 processLinks({
                     linksList: webPage.findAll('img'),
                     attributeName: 'src',
@@ -111,7 +129,10 @@ async function analyzeExternalResources(webPage, url, options) {
                     sameHostname: true
                 }),
                 options.requestOptions
-            );
+            );        
+            const sizes = getSizes(result.internal.Images);
+            result.fullSize += sizes.full;
+            result.notCachedSize += sizes.noncached;
         }
         //process internal links
         if (options.links) {
@@ -135,21 +156,27 @@ async function analyzeExternalResources(webPage, url, options) {
     return result;
 }
 
-async function processSizeAndTiming(linksList, requestOptions) {
+
+async function processSizeAndCaching(linksList, requestOptions) {
     const resultList = [];
     for (let link of linksList) {
         try {
             const options = Object.assign({
                     url: link, 
-                    time:true, 
-                    resolveWithFullResponse: true
+                    resolveWithFullResponse: true,
+                    method:"OPTIONS"
                 },  requestOptions);
-            const result = await request.get(options);
+            let result = await request.get(options);
+            if (!result.headers['content-length']) {
+                options.method = "GET";
+                result = await request.get(options);
+            }            
             const output = {
                 url: link,                 
-                timing: result.elapsedTime,
-                length: result.body.length
+                length: parseInt(result.headers['content-length']),
+                caches: (result.headers['cache-control']||"").indexOf("max-age") != -1
             };
+            // console.log(result.headers['cache-control']);
             resultList.push(output);
         } catch (e) {
             console.log(e);
@@ -170,5 +197,20 @@ function processLinks(options) {
     sort().
     map(elem => normalizeLink(options.parentLink, elem));
 }
+
+function getSizes(linksList) {
+    // console.log(linksList);
+    return linksList.reduce((acc, elem) => {
+        acc.full += (elem.length || 0);
+        if (!elem.caches) {
+            acc.noncached += (elem.length || 0);
+        }            
+        return acc
+    }, {
+        noncached: 0,
+        full: 0
+    })
+}
+
 
 exports.analyzeExternalResources = analyzeExternalResources;
