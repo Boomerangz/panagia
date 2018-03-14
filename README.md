@@ -44,3 +44,5 @@
 - [ ] Listing of WebAPI methods used by JS
 - [ ] Checking of nested Iframes
 - [ ] Checking of dynamic redirects
+- [ ] Checking of unused CSS
+- [ ] Checking of adaptive design
