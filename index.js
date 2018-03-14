@@ -10,9 +10,17 @@ const request = require('request-promise-native');
 const jssoup = require('jssoup').default;
 const urlParser = require("url");
 const urlJoin = require("url-join");
-const resourcesAnalyze = require("./analyzers/external_resources_analyzer");
 const userAgents = require("./utils/useragents")
 
+const resourcesAnalyze = require("./analyzers/external_resources_analyzer");
+const alexaAnalyze = require("./analyzers/alexa_rank");
+const blackListAnalyze = require("./analyzers/black_list_analyzer");
+const httpsAnalyzer = require("./analyzers/https_analyzer");
+
+
+
+
+//Setup the main analyzing
 async function analyzeWebPage(url, options) {
     console.log(chalk`Analyze of {green.bold ${url}} started.`);
     let html;
@@ -54,8 +62,15 @@ async function analyzeWebPage(url, options) {
         requestOptions: options,
     };
     result.resources = await resourcesAnalyze.analyzeExternalResources(webPage, url, resourcesAnalyzeOptions);
+    result.alexaInfo = await alexaAnalyze.getAlexaInfo(url);
+    result.isInBlackList = await blackListAnalyze.isInBlackList(url);
+    result.fullyHttps = httpsAnalyzer.isFullyHttps(result.resources);
     console.log(JSON.stringify(result, null, 2));
 }
+
+
+
+//check if we need to set User Agent
 
 let ua;
 if (options.browser) {
@@ -63,8 +78,9 @@ if (options.browser) {
 }
 const queryOptions = {    
     headers: {
-        "User-Agent": ua
+        "user-agent": ua
     }
 }
 
+//And start the analyzing
 analyzeWebPage(options.url, queryOptions);
