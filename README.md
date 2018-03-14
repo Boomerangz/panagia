@@ -24,3 +24,14 @@
 `--user-agent <user-agent string>`   Work with custom User Agent header
 
 `--help`  Print help message
+
+### Check list:
+* Page size
+* Page loading time
+* Alexa Rank
+* Black listing
+* Fully HTTPS or not
+* Server user
+* Technology used(by headers check)
+* Summary imported files size
+* Summary non caching imported files size
